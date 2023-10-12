@@ -9,7 +9,8 @@
 #include <sys/stat.h>
 using namespace std;
 
-typedef struct __attribute__((__packed__)){
+typedef struct __attribute__((__packed__))
+{
     unsigned char fileMarker1;
     unsigned char fileMarker2;
     unsigned int bfSize;
@@ -18,7 +19,8 @@ typedef struct __attribute__((__packed__)){
     unsigned int imageDataOffset;
 } FILEHEADER;
 
-typedef struct __attribute__((__packed__)){
+typedef struct __attribute__((__packed__))
+{
     unsigned int biSize;
     int width;
     int height;
@@ -39,94 +41,124 @@ typedef struct
     uint8_t R;
 } RGB;
 
-typedef struct{
+typedef struct
+{
     uint8_t B;
     uint8_t G;
     uint8_t R;
     uint8_t A;
 } ARGB;
 
-class BMP{
+class BMP
+{
 private:
-    const char* IMAGE_PATH;
+    const char *IMAGE_PATH;
     FILEHEADER header;
     INFOHEADER info;
-    RGB** RGB_color;
-    ARGB** ARGB_color;
+
 public:
-    BMP(const char* path) : IMAGE_PATH(path), RGB_color(NULL), ARGB_color(NULL) { parse(); }
+    bool isRGB;
+    int IMG_width;
+    int IMG_height;
+    vector<vector<RGB>> RGB_color;
+    vector<vector<ARGB>> ARGB_color;
+    BMP(const char *path) : IMAGE_PATH(path) { Parse(); }
     ~BMP()
     {
-        if (RGB_color)
+        if (isRGB)
         {
             for (int i = 0; i < info.width; i++)
-                delete[] RGB_color[i];
-            delete[] RGB_color;
+            {
+                RGB_color[i].clear();
+                RGB_color[i].shrink_to_fit();
+            }
+            RGB_color.clear();
+            RGB_color.shrink_to_fit();
         }
         else
         {
-            for (int i = 0; i < info.height; i++)
-                delete[] ARGB_color[i];
-            delete[] ARGB_color;
+            for (int i = 0; i < info.width; i++)
+            {
+                ARGB_color[i].clear();
+                ARGB_color[i].shrink_to_fit();
+            }
+            ARGB_color.clear();
+            ARGB_color.shrink_to_fit();
         }
     }
 
-    void parse()
+    void Parse()
     {
-        FILE* IMG = fopen(IMAGE_PATH, "rb");
-        if (IMG == NULL)
+        ifstream IMG(IMAGE_PATH, ios::in | ios::binary);
+        if (IMG.fail())
         {
             cout << "Loading failed\n";
             exit(1);
         }
-        fread(&header, sizeof(unsigned char), sizeof(FILEHEADER), IMG);
-        fread(&info, sizeof(unsigned char), sizeof(INFOHEADER), IMG);
+        IMG.read(reinterpret_cast<char *>(&header), sizeof(FILEHEADER));
+        IMG.read(reinterpret_cast<char *>(&info), sizeof(INFOHEADER));
 
+        IMG_width = info.width;
+        IMG_height = info.height;
         if (info.bitPix == 24)
         {
-            RGB_color = new RGB* [info.height];
+            isRGB = true;
+            vector<RGB> temp;
             for (int i = 0; i < info.height; i++)
-                RGB_color[i] = new RGB[info.width];
-            for (int i = 0; i < info.height; i++)
+            {
                 for (int j = 0; j < info.width; j++)
                 {
                     RGB rgb;
-                    fread(&rgb, sizeof(RGB), 1, IMG);
-                    RGB_color[i][j] = rgb;
+                    IMG.read((char *)&rgb, sizeof(RGB));
+                    temp.push_back(rgb);
                 }
+                RGB_color.push_back(temp);
+                temp.clear();
+            }
         }
         else
         {
-            ARGB_color = new ARGB* [info.height];
+            isRGB = false;
+            vector<ARGB> temp;
             for (int i = 0; i < info.height; i++)
-                ARGB_color[i] = new ARGB[info.width];
-            for (int i = 0; i < info.height; i++)
+            {
                 for (int j = 0; j < info.width; j++)
                 {
                     ARGB argb;
-                    fread(&argb, sizeof(RGB), 1, IMG);
-                    ARGB_color[i][j] = argb;
+                    IMG.read((char *)&argb, sizeof(ARGB));
+                    temp.push_back(argb);
                 }
+                ARGB_color.push_back(temp);
+                temp.clear();
+            }
         }
-        fclose(IMG);
+        IMG.close();
     }
-    void Export(const char* Save_path)
+    void Save(const char *Save_path)
     {
         struct stat sb;
         if (stat("output_bmp", &sb) != 0)
             mkdir("./output_bmp", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-            
-        FILE* OUTPUT = fopen(Save_path, "wb");
-        fwrite(&header, sizeof(unsigned char), sizeof(FILEHEADER), OUTPUT);
-        fwrite(&info, sizeof(unsigned char), sizeof(INFOHEADER), OUTPUT);
 
-        for (int i = 0; i < info.height; i++)
-            for (int j = 0; j < info.width; j++)
-            {
-                RGB rgb = RGB_color[i][j];
-                fwrite(&rgb, sizeof(RGB), 1, OUTPUT);
-            }
-        fclose(OUTPUT);
+        ofstream OUTPUT_IMG(Save_path, ios::out | ios::binary);
+        OUTPUT_IMG.write(reinterpret_cast<char *>(&header), sizeof(FILEHEADER));
+        OUTPUT_IMG.write(reinterpret_cast<char *>(&info), sizeof(INFOHEADER));
+
+        if (isRGB)
+            for (int i = 0; i < info.height; i++)
+                for (int j = 0; j < info.width; j++)
+                {
+                    RGB rgb = RGB_color[i][j];
+                    OUTPUT_IMG.write((char *)&rgb, sizeof(RGB));
+                }
+        else
+            for (int i = 0; i < info.height; i++)
+                for (int j = 0; j < info.width; j++)
+                {
+                    ARGB argb = ARGB_color[i][j];
+                    OUTPUT_IMG.write((char *)&argb, sizeof(ARGB));
+                }
+        OUTPUT_IMG.close();
     }
 };
 

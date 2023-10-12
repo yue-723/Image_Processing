@@ -3,11 +3,13 @@ target1 = hw1_flip
 # target3 = hw3_scaling
 CC = g++
 INCLUDE = bmp.hpp 
+CFLAGS+= -std=c++14
+CFLAGS+= -Wall
 
-all: $(target1) 
+all: hw1_flip
 
-$(target1): $(target1).cpp $(INCLUDE)
-	$(CC) $(target1).cpp $(INCLUDE) -o $(target1)
+$(target1): hw1_flip.cpp $(INCLUDE)
+	$(CC) hw1_flip.cpp $(INCLUDE) -o hw1_flip $(CFLAGS)
 
 # $(target2): $(target2).cpp $(INCLUDE)
 # 	$(CC) $(target2).cpp -I $(INCLUDE) -o $(target2)
@@ -17,7 +19,7 @@ $(target1): $(target1).cpp $(INCLUDE)
 
 .PHONY: clean
 clean:
-	rm -r $(target1) output_bmp/*.bmp
+	rm -r hw1_flip output_bmp/*.bmp
 	
-run: $(target1)
-	./$(target1) $(IMAGE_PATH)
+run: hw1_flip
+	./hw1_flip $(IMAGE_PATH)
