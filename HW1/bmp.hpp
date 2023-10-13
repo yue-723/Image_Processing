@@ -103,33 +103,33 @@ public:
         if (info.bitPix == 24)
         {
             isRGB = true;
-            vector<RGB> temp;
+            vector<RGB> buffer;
             for (int i = 0; i < info.height; i++)
             {
                 for (int j = 0; j < info.width; j++)
                 {
                     RGB rgb;
                     IMG.read((char *)&rgb, sizeof(RGB));
-                    temp.push_back(rgb);
+                    buffer.push_back(rgb);
                 }
-                RGB_color.push_back(temp);
-                temp.clear();
+                RGB_color.push_back(buffer);
+                buffer.clear();
             }
         }
         else
         {
             isRGB = false;
-            vector<ARGB> temp;
+            vector<ARGB> buffer;
             for (int i = 0; i < info.height; i++)
             {
                 for (int j = 0; j < info.width; j++)
                 {
                     ARGB argb;
                     IMG.read((char *)&argb, sizeof(ARGB));
-                    temp.push_back(argb);
+                    buffer.push_back(argb);
                 }
-                ARGB_color.push_back(temp);
-                temp.clear();
+                ARGB_color.push_back(buffer);
+                buffer.clear();
             }
         }
         IMG.close();
