@@ -1,4 +1,4 @@
-## NYCU DIP_HW1
+## 2023 NYCU DIP HW1
 
 ### Assignment
 
@@ -6,7 +6,7 @@ Using C++ or C, read and write the images of **BMP format**.
 
 To implement three types of BMP image processing:
 1. Image IO and flip horizontally
-2. Quantization Resolution
+2. Quantization Resolution by 6-bits, 4-bits and 2-bits
 3. Scaling by Bilinear Interpolation with rate 1.5
 
 ## Files tree
@@ -24,7 +24,7 @@ To implement three types of BMP image processing:
 
 ## Command instruction
 
-• Compile this project to generate ***.out**  file
+• Compile all of this project to generate all ***.out**  file
 ```
 make
 ```
@@ -32,9 +32,18 @@ make
 ```
 make run IMAGE_PATH=$(IMAGE_PATH)
 ```
-NOTE: $(IMAGE_PATH) is your path of input *.bmp image
-
-• clear the project repository
+• Clear the project repository
 ```
 make clean
 ```
+• Compile a specified ***.cpp**
+```
+g++ $(FILENAME).cpp bmp.hpp  -o hw1_flip.out -Wall -std=c++14
+```
+• Run a specified ***.out**
+```
+./$(FILENAME).out $(IMAGE_PATH)
+```
+NOTE: 
+- $(FILENAME) is the filename of *.cpp
+- $(IMAGE_PATH) is your path of input *.bmp image

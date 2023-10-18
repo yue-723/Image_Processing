@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 using namespace std;
 
+// BMP File Header -> 14 bytes
 typedef struct __attribute__((__packed__))
 {
     uint16_t fileMarker;
@@ -18,6 +19,7 @@ typedef struct __attribute__((__packed__))
     unsigned int bfOffset;
 } FILEHEADER;
 
+// BMP Info Header -> 40 bytes
 typedef struct __attribute__((__packed__))
 {
     unsigned int biSize;
@@ -33,6 +35,7 @@ typedef struct __attribute__((__packed__))
     unsigned int biClrImportant;
 } INFOHEADER;
 
+// RGB color -> 3bytes of pixel depth
 typedef struct
 {
     uint8_t B;
@@ -40,6 +43,7 @@ typedef struct
     uint8_t R;
 } RGB;
 
+// ARGB color -> 4bytes of pixel depth
 typedef struct
 {
     uint8_t B;
@@ -48,6 +52,7 @@ typedef struct
     uint8_t A;
 } ARGB;
 
+// BMP class -> io processing and bmp data processing
 class BMP
 {
 private:
@@ -88,20 +93,21 @@ public:
         }
     }
 
-    void Parse()
+    void Parse() // parsing *.bmp to get FILEHEADER, INFOHEADER, Bitmap Array(Color)
     {
+        // read image
         ifstream IMG(IMAGE_PATH, ios::in | ios::binary);
         if (IMG.fail())
         {
             cout << "Loading failed\n";
             exit(1);
         }
-        IMG.read(reinterpret_cast<char *>(&header), sizeof(FILEHEADER));
-        IMG.read(reinterpret_cast<char *>(&info), sizeof(INFOHEADER));
+        IMG.read(reinterpret_cast<char *>(&header), sizeof(FILEHEADER)); // get FILEHEADER
+        IMG.read(reinterpret_cast<char *>(&info), sizeof(INFOHEADER));   // get INFOHEADER
 
         IMG_width = info.width;
         IMG_height = info.height;
-        if (info.bitPix == 24)
+        if (info.bitPix == 24) // check pixel depth and get Bitmap Array(Color)
         {
             isRGB = true;
             vector<RGB> buffer;
@@ -135,14 +141,14 @@ public:
         }
         IMG.close();
     }
-    void Save(const char *Save_path)
+    void Save(const char *Save_path) // save *.bmp
     {
         struct stat sb;
         if (stat("output_bmp", &sb) != 0)
             mkdir("./output_bmp", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
         ofstream OUTPUT_IMG(Save_path, ios::out | ios::binary);
-        if (IMG_width != info.width)
+        if (IMG_width != info.width) // for scaling
         {
             info.width = IMG_width;
             info.height = IMG_height;

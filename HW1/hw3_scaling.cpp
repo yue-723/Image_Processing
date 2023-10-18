@@ -7,25 +7,28 @@ void BiInter_Linear_RGB(vector<vector<RGB>> src, vector<vector<RGB>> &dst, float
 {
     for (size_t i = 0; i < dst.size(); i++)
     {
-        double point_x = (i + 0.5) / ratio - 0.5;
+        double point_x = (i + 0.5) / ratio - 0.5; // align to center
+        // avoid getting out of range
         if (point_x < 0)
             point_x = 0;
         if (point_x >= src.size() - 1)
             point_x = src.size() - 2;
 
+        // get nearest points horizontally
         int x1 = floor(point_x);
         int x2 = ceil(point_x);
         double u = point_x - x1;
 
         for (size_t j = 0; j < dst[0].size(); j++)
         {
-            double point_y = (j + 0.5) / ratio - 0.5;
-
+            double point_y = (j + 0.5) / ratio - 0.5; // align to center
+            // avoid getting out of range
             if (point_y < 0)
                 point_y = 0;
             if (point_y >= src[0].size() - 1)
                 point_y = src[0].size() - 2;
 
+            // get nearest points vertically
             int y1 = floor(point_y);
             int y2 = ceil(point_y);
             double v = point_y - y1;
@@ -43,7 +46,8 @@ void BiInter_Linear_ARGB(vector<vector<ARGB>> src, vector<vector<ARGB>> &dst, fl
 {
     for (size_t i = 0; i < dst.size(); i++)
     {
-        double point_x = (i + 0.5) / ratio - 0.5;
+        double point_x = (i + 0.5) / ratio - 0.5; // avoid getting out of range
+        // avoid getting out of range
         if (point_x < 0)
             point_x = 0;
         if (point_x >= src.size() - 1)
@@ -55,12 +59,14 @@ void BiInter_Linear_ARGB(vector<vector<ARGB>> src, vector<vector<ARGB>> &dst, fl
 
         for (size_t j = 0; j < dst[0].size(); j++)
         {
-            double point_y = (j + 0.5) / ratio - 0.5;
+            double point_y = (j + 0.5) / ratio - 0.5; // avoid getting out of range
+            // avoid getting out of range
             if (point_y < 0)
                 point_y = 0;
             if (point_y >= src[0].size() - 1)
                 point_y = src[0].size() - 2;
 
+            // get nearest points vertically
             int y1 = floor(point_y);
             int y2 = ceil(point_y);
             double v = point_y - y1;
@@ -77,26 +83,30 @@ void BiInter_Linear_ARGB(vector<vector<ARGB>> src, vector<vector<ARGB>> &dst, fl
 
 int main(int argc, char *argv[])
 {
+    // processing output filename and path
     string FILEPATH = argv[argc - 1];
     string output_path = (FILEPATH).substr((FILEPATH).rfind("/") + 1);
     output_path.erase(0, 5);
     string output_ext[2] = {"_up", "_down"};
     output_path = OutputFolder + output_path;
 
+    // set scaling ratio
     float upscale_ratio = 1.5;
     float downscale_ratio = 1 / 1.5;
-
     float ratio[2] = {upscale_ratio, downscale_ratio};
+
     for (int i = 0; i < 2; i++)
     {
-        BMP bmp(FILEPATH.c_str());
+        BMP bmp(FILEPATH.c_str()); // loading *.bmp
+
+        // set output's Height & Width
         int dst_H = round(ratio[i] * bmp.IMG_height);
         int dst_W = round(ratio[i] * bmp.IMG_width);
-        dst_W -= dst_W % 4;
+        dst_W -= dst_W % 4; // *.bmp's width must be multiples of four
         bmp.IMG_width = dst_W;
         bmp.IMG_height = dst_H;
 
-        if (bmp.isRGB)
+        if (bmp.isRGB) // check pixel depth
         {
             vector<vector<RGB>> new_RGB;
             new_RGB.resize(dst_H, vector<RGB>(dst_W));
@@ -110,6 +120,7 @@ int main(int argc, char *argv[])
             BiInter_Linear_ARGB(bmp.ARGB_color, new_ARGB, ratio[i]);
             bmp.ARGB_color = new_ARGB;
         }
+        // processing output filename and save
         output_path.insert(output_path.size() - 4, output_ext[i]);
         bmp.Save(output_path.c_str());
         output_path.erase(output_path.size() - 7, output_ext[i].size());
