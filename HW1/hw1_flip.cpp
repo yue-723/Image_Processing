@@ -1,8 +1,5 @@
-#include <iostream>
-#include <string>
-#include <vector>
 #include "bmp.hpp"
-using namespace std;
+#include <algorithm>
 
 #define OutputFolder "output_bmp/"
 
@@ -16,30 +13,15 @@ int main(int argc, char *argv[])
     BMP bmp(FILEPATH.c_str());
     if (bmp.isRGB)
     {
-        vector<vector<RGB>> new_RGB;
-        vector<RGB> buffer;
         for (int i = 0; i < bmp.IMG_height; i++)
-        {
-            for (int j = bmp.IMG_width - 1; j >= 0; j--)
-                buffer.push_back(bmp.RGB_color[i][j]);
-            new_RGB.push_back(buffer);
-            buffer.clear();
-        }
-        bmp.RGB_color = new_RGB;
+            reverse(bmp.RGB_color[i].begin(), bmp.RGB_color[i].end());
     }
     else
     {
-        vector<vector<ARGB>> new_ARGB;
-        vector<ARGB> buffer;
         for (int i = 0; i < bmp.IMG_height; i++)
-        {
-            for (int j = bmp.IMG_width - 1; j >= 0; j--)
-                buffer.push_back(bmp.ARGB_color[i][j]);
-            new_ARGB.push_back(buffer);
-            buffer.clear();
-        }
-        bmp.ARGB_color = new_ARGB;
+            reverse(bmp.ARGB_color[i].begin(), bmp.ARGB_color[i].end());
     }
     bmp.Save(output_path.c_str());
+
     return 0;
 }

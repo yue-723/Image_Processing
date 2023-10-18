@@ -11,12 +11,11 @@ using namespace std;
 
 typedef struct __attribute__((__packed__))
 {
-    unsigned char fileMarker1;
-    unsigned char fileMarker2;
+    uint16_t fileMarker;
     unsigned int bfSize;
-    uint16_t unused1;
-    uint16_t unused2;
-    unsigned int imageDataOffset;
+    uint16_t bfReserved1;
+    uint16_t bfReserved2;
+    unsigned int bfOffset;
 } FILEHEADER;
 
 typedef struct __attribute__((__packed__))
@@ -62,22 +61,24 @@ public:
     int IMG_height;
     vector<vector<RGB>> RGB_color;
     vector<vector<ARGB>> ARGB_color;
+
     BMP(const char *path) : IMAGE_PATH(path) { Parse(); }
     ~BMP()
     {
         if (isRGB)
         {
-            for (int i = 0; i < info.width; i++)
+            for (int i = 0; i < info.height; i++)
             {
                 RGB_color[i].clear();
                 RGB_color[i].shrink_to_fit();
             }
+
             RGB_color.clear();
             RGB_color.shrink_to_fit();
         }
         else
         {
-            for (int i = 0; i < info.width; i++)
+            for (int i = 0; i < info.height; i++)
             {
                 ARGB_color[i].clear();
                 ARGB_color[i].shrink_to_fit();
@@ -141,9 +142,15 @@ public:
             mkdir("./output_bmp", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
         ofstream OUTPUT_IMG(Save_path, ios::out | ios::binary);
+        if (IMG_width != info.width)
+        {
+            info.width = IMG_width;
+            info.height = IMG_height;
+            info.biSizeImage = IMG_width * IMG_height * info.bitPix / 8;
+            header.bfSize = info.biSizeImage + 54;
+        }
         OUTPUT_IMG.write(reinterpret_cast<char *>(&header), sizeof(FILEHEADER));
         OUTPUT_IMG.write(reinterpret_cast<char *>(&info), sizeof(INFOHEADER));
-
         if (isRGB)
             for (int i = 0; i < info.height; i++)
                 for (int j = 0; j < info.width; j++)
