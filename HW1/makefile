@@ -22,7 +22,7 @@ hw3_scaling: hw3_scaling.cpp $(INCLUDE)
 clean:
 	rm -rf *.out output_bmp/*.bmp
 
-run: hw1_flip hw2_resolution hw3_scaling
+run:
 	./hw1_flip.out $(IMAGE_PATH)
 	./hw2_resolution.out $(IMAGE_PATH)
 	./hw3_scaling.out $(IMAGE_PATH)

@@ -1,12 +1,13 @@
 #include "bmp.hpp"
 #include <algorithm>
 
-#define OutputFolder "output_bmp/"
+#define OutputFolder "output_bmp/output"
 
 int main(int argc, char *argv[])
 {
     string FILEPATH = argv[argc - 1];
     string output_path = (FILEPATH).substr((FILEPATH).rfind("/") + 1);
+    output_path.erase(0, 5);
     output_path.insert(output_path.size() - 4, "_flip");
     output_path = OutputFolder + output_path;
 

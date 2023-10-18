@@ -1,7 +1,7 @@
 #include "bmp.hpp"
 #include <cmath>
 
-#define OutputFolder "output_bmp/"
+#define OutputFolder "output_bmp/output"
 
 void BiInter_Linear_RGB(vector<vector<RGB>> src, vector<vector<RGB>> &dst, float ratio)
 {
@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
 {
     string FILEPATH = argv[argc - 1];
     string output_path = (FILEPATH).substr((FILEPATH).rfind("/") + 1);
+    output_path.erase(0, 5);
     string output_ext[2] = {"_up", "_down"};
     output_path = OutputFolder + output_path;
 

@@ -1,7 +1,7 @@
 #include "bmp.hpp"
 #include <cmath>
 
-#define OutputFolder "output_bmp/"
+#define OutputFolder "output_bmp/output"
 
 void do_RGB_quantization(RGB &rgb, int ratio)
 {
@@ -22,8 +22,9 @@ void do_ARGB_quantization(ARGB &argb, int ratio)
 int main(int argc, char *argv[])
 {
     string FILEPATH = argv[argc - 1];
-    string filename = (FILEPATH).substr((FILEPATH).rfind("/") + 1);
-    string output_path = OutputFolder + filename;
+    string output_path = (FILEPATH).substr((FILEPATH).rfind("/") + 1);
+    output_path.erase(0, 5);
+    output_path = OutputFolder + output_path;
 
     BMP bmp(FILEPATH.c_str());
     int ratio[3] = {6, 4, 2};
