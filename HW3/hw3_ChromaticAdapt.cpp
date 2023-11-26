@@ -148,12 +148,15 @@ int main(int argc, char *argv[])
     {
     case 0:
         ShadeOfGray(copy, bmp.RGB_color, 1);
+        cout << "Shade Of Gray, P=1" << endl;
         break;
     case 1:
         PerfectReflect(copy, bmp.RGB_color, 0.05);
+        cout << "Perfect Reflect" << endl;
         break;
     default:
         ShadeOfGray(copy, bmp.RGB_color, 1);
+        cout << "Shade Of Gray, P=1" << endl;
         break;
     }
 

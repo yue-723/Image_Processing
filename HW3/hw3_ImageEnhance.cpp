@@ -235,7 +235,10 @@ int main(int argc, char *argv[])
     while (!isdigit(output_path[found]))
         found++;
     output_path.erase(0, found);
-    output_path.erase(output_path.size() - 6, output_path.size() - 1);
+    if (output_path.size() > 6)
+        output_path.erase(output_path.size() - 6, output_path.size() - 1);
+    else
+        output_path.erase(output_path.size() - 4, output_path.size() - 1);
     output_path = OutputFolder + output_path + Output_Ext;
 
     BMP bmp(FILEPATH.c_str());
@@ -246,15 +249,19 @@ int main(int argc, char *argv[])
     {
     case 0:
         UnsharpMask(copy, bmp.RGB_color);
+        cout << "Unsharp Mask" << endl;
         break;
     case 1:
         Hist_equl(copy, bmp.RGB_color);
+        cout << "Histogram Equalization" << endl;
         break;
     case 2:
         median_filter(copy, bmp.RGB_color);
+        cout << "Median Filter" << endl;
         break;
     default:
         UnsharpMask(copy, bmp.RGB_color);
+        cout << "Unsharp Mask" << endl;
         break;
     }
 

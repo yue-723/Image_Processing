@@ -2,7 +2,7 @@ IMAGE_DIR_1 = test_bmp/*.bmp
 IMAGE_DIR_2 = output_bmp/*.bmp
 
 target1 = hw3_ChromaticAdapt
-target2 = hw3_ImageEnhancement
+target2 = hw3_ImageEnhance
 AWB_TYPE = 0
 Enhance_TYPE = 0
 
@@ -10,7 +10,6 @@ CC = g++
 INCLUDE = bmp.hpp 
 CFLAGS += -Wall
 CFLAGS += -std=c++14
-CFLAGS += -lstdc++fs
 
 
 all: $(target1) $(target2)
