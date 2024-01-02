@@ -153,7 +153,7 @@ public:
             info.width = IMG_width;
             info.height = IMG_height;
             info.biSizeImage = IMG_width * IMG_height * info.bitPix / 8;
-            header.bfSize = info.biSizeImage + 54;
+            header.bfSize = info.biSizeImage + header.bfOffset;
         }
         OUTPUT_IMG.write(reinterpret_cast<char *>(&header), sizeof(FILEHEADER));
         OUTPUT_IMG.write(reinterpret_cast<char *>(&info), sizeof(INFOHEADER));

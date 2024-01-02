@@ -1,5 +1,5 @@
 IMAGE_DIR_1 = test_bmp/*.bmp
-IMAGE_DIR_2 = output_bmp/*.bmp
+IMAGE_DIR_2 = output_bmp/*_1.bmp
 
 target1 = hw3_ChromaticAdapt
 target2 = hw3_ImageEnhance
